@@ -1,0 +1,64 @@
+{% extends "user/base.html" %}
+
+{% block title %}{{ product.productname }} | ShopZone{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="shop-container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="{{ url_for('products') }}">Products</a>
+        <span aria-hidden="true">/</span>
+        <span>{{ product.productname }}</span>
+    </nav>
+
+    <section class="product-detail-layout">
+        <div class="product-detail-image">
+            {% if product_image_url(product) %}
+            <img src="{{ product_image_url(product) }}" alt="{{ product.productname }}">
+            {% else %}
+            <div class="image-placeholder detail-placeholder"><span>No image available</span></div>
+            {% endif %}
+        </div>
+
+        <div class="product-detail-info">
+            <p class="product-category">{{ product.category or 'General' }}</p>
+            <h1>{{ product.productname }}</h1>
+            <p class="detail-price">₹{{ "%.2f"|format(product.saleprice or 0) }}</p>
+
+            <div class="detail-description">
+                <h2>Product description</h2>
+                <p>{{ product.description or 'No description has been added for this product yet.' }}</p>
+            </div>
+
+            {% if product.quantity|int > 0 %}
+            <div class="detail-stock available-stock">
+                <span class="stock-dot"></span>
+                In stock · {{ product.quantity }} available
+            </div>
+            {% else %}
+            <div class="detail-stock unavailable-stock">
+                Currently out of stock
+            </div>
+            {% endif %}
+
+            <div class="detail-actions">
+                {% if product.quantity|int > 0 %}
+                <form method="POST" action="{{ url_for('add_to_cart', product_id=product.productid) }}" class="add-to-cart-form">
+                    <label for="quantity">Quantity</label>
+                    <input id="quantity" type="number" name="quantity" min="1" max="{{ product.quantity }}" value="1" required>
+                    <button class="view-product-button" type="submit">Add to cart</button>
+                </form>
+                {% else %}
+                <button class="view-product-button" type="button" disabled>Out of stock</button>
+                {% endif %}
+                <a class="view-product-button secondary-button" href="{{ url_for('products') }}">← Continue shopping</a>
+                <a class="view-product-button" href="{{ url_for('cart') }}">View cart</a>
+            </div>
+            <p class="product-id">Product ID: {{ product.productid }}</p>
+        </div>
+    </section>
+</main>
+{% endblock %}

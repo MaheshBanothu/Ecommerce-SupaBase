@@ -1,0 +1,105 @@
+
+{% extends "admin/base.html" %}
+
+{% block title %}Update Delivery | ShopZone{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Update Delivery</h1>
+        <p>Order #{{ order.orderid }}</p>
+    </div>
+
+    <a href="{{ url_for(
+        'admin_order_details',
+        order_id=order.orderid
+    ) }}" class="btn btn-secondary">
+        Back to Order
+    </a>
+</div>
+
+<div class="details-card">
+
+    <h2>Delivery Information</h2>
+
+    <div class="detail-row">
+        <span>Customer</span>
+        <strong>{{ order.customer_name }}</strong>
+    </div>
+
+    <div class="detail-row">
+        <span>Order Date</span>
+        <strong>{{ order.created_at }}</strong>
+    </div>
+
+    <div class="detail-row">
+        <span>Current Status</span>
+        <strong>{{ order.status|upper }}</strong>
+    </div>
+
+    <form method="POST"
+          action="{{ url_for(
+              'admin_edit_order',
+              order_id=order.orderid
+          ) }}">
+
+        <div class="form-group">
+
+            <label for="status">
+                Update Delivery Status
+            </label>
+
+            <select name="status" id="status" required>
+
+                <option value="pending"
+                    {% if order.status|lower == 'pending' %}
+                    selected
+                    {% endif %}>
+                    Pending
+                </option>
+
+                <option value="shipped"
+                    {% if order.status|lower == 'shipped' %}
+                    selected
+                    {% endif %}>
+                    Shipped
+                </option>
+
+                <option value="delivered"
+                    {% if order.status|lower == 'delivered' %}
+                    selected
+                    {% endif %}>
+                    Delivered
+                </option>
+
+                <option value="cancelled"
+                    {% if order.status|lower == 'cancelled' %}
+                    selected
+                    {% endif %}>
+                    Cancelled
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="form-actions">
+
+            <button type="submit" class="btn btn-primary">
+                Save Delivery Status
+            </button>
+
+            <a href="{{ url_for(
+                'admin_orders'
+            ) }}" class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,194 @@
+```html
+{% extends "admin/base.html" %}
+
+{% block title %}Settings | ShopZone Admin{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Settings</h1>
+        <p>Manage ShopZone settings</p>
+    </div>
+</div>
+
+<div class="settings-container">
+
+    <div class="settings-card">
+
+        <h2>Admin Information</h2>
+
+        <form method="POST">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="admin_name">Admin Name</label>
+
+                    <input
+                        type="text"
+                        id="admin_name"
+                        name="admin_name"
+                        value="{{ settings.admin_name }}"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="admin_email">Admin Email</label>
+
+                    <input
+                        type="email"
+                        id="admin_email"
+                        name="admin_email"
+                        value="{{ settings.admin_email }}"
+                        required
+                    >
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Save Changes
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="settings-card">
+
+        <h2>Shop Information</h2>
+
+        <form method="POST">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="shop_name">Shop Name</label>
+
+                    <input
+                        type="text"
+                        id="shop_name"
+                        name="shop_name"
+                        value="{{ settings.shop_name }}"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="shop_email">Shop Email</label>
+
+                    <input
+                        type="email"
+                        id="shop_email"
+                        name="shop_email"
+                        value="{{ settings.shop_email }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="shop_phone">Shop Phone</label>
+
+                    <input
+                        type="text"
+                        id="shop_phone"
+                        name="shop_phone"
+                        value="{{ settings.shop_phone }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="currency">Currency</label>
+
+                    <select id="currency" name="currency">
+
+                        <option value="INR"
+                            {% if settings.currency == 'INR' %}selected{% endif %}>
+                            INR - Indian Rupee
+                        </option>
+
+                        <option value="USD"
+                            {% if settings.currency == 'USD' %}selected{% endif %}>
+                            USD - US Dollar
+                        </option>
+
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label for="shop_address">Shop Address</label>
+
+                <textarea
+                    id="shop_address"
+                    name="shop_address"
+                    rows="4"
+                >{{ settings.shop_address }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Save Shop Information
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="settings-card">
+
+        <h2>Order Settings</h2>
+
+        <form method="POST">
+
+            <div class="form-group">
+                <label for="default_order_status">
+                    Default Order Status
+                </label>
+
+                <select
+                    id="default_order_status"
+                    name="default_order_status"
+                >
+                    <option value="PENDING"
+                        {% if settings.default_order_status == 'PENDING' %}selected{% endif %}>
+                        Pending
+                    </option>
+
+                    <option value="PROCESSING"
+                        {% if settings.default_order_status == 'PROCESSING' %}selected{% endif %}>
+                        Processing
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="shipping_charge">
+                    Shipping Charge
+                </label>
+
+                <input
+                    type="number"
+                    id="shipping_charge"
+                    name="shipping_charge"
+                    value="{{ settings.shipping_charge }}"
+                    min="0"
+                    step="0.01"
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Save Order Settings
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

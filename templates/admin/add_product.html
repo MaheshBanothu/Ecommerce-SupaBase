@@ -1,0 +1,204 @@
+
+{% extends "admin/base.html" %}
+
+{% block title %}Add Product | ShopZone Admin{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1>Add Product</h1>
+        <p>Add a new product to your store.</p>
+    </div>
+
+    <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">
+        Back to Products
+    </a>
+
+</div>
+
+
+<div class="form-container">
+
+    <form method="POST"
+          action="{{ url_for('admin_add_product') }}"
+          enctype="multipart/form-data">
+
+
+        <!-- Product Name -->
+
+        <div class="form-group">
+
+            <label for="name">Product Name</label>
+
+            <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Enter product name"
+                required
+            >
+
+        </div>
+
+
+        <!-- Existing Category -->
+
+        <div class="form-group">
+
+            <label for="category">
+                Select Category
+            </label>
+
+            <select id="category" name="category">
+
+                <option value="">
+                    Select Existing Category
+                </option>
+
+                {% for category in categories %}
+
+                <option value="{{ category[0] }}">
+                    {{ category[0] }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <!-- New Category -->
+
+        <div class="form-group">
+
+            <label for="new_category">
+                Or Create New Category
+            </label>
+
+            <input
+                type="text"
+                id="new_category"
+                name="new_category"
+                placeholder="Enter new category name"
+            >
+
+            <p class="form-help">
+                If you enter a new category, it will be created automatically.
+            </p>
+
+        </div>
+
+
+        <!-- Price and Stock -->
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label for="price">
+                    Price
+                </label>
+
+                <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    placeholder="Enter price"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="stock">
+                    Stock
+                </label>
+
+                <input
+                    type="number"
+                    id="stock"
+                    name="stock"
+                    placeholder="Enter stock quantity"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- Description -->
+
+        <div class="form-group">
+
+            <label for="description">
+                Description
+            </label>
+
+            <textarea
+                id="description"
+                name="description"
+                rows="5"
+                placeholder="Enter product description"
+                required
+            ></textarea>
+
+        </div>
+
+
+        <!-- Product Image -->
+
+        <div class="form-group">
+
+            <label for="image">
+                Product Image
+            </label>
+
+            <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+                required
+            >
+
+            <p class="form-help">
+                Upload JPG, JPEG, PNG or WEBP image.
+            </p>
+
+        </div>
+
+
+        <!-- Buttons -->
+
+        <div class="form-actions">
+
+            <a
+                href="{{ url_for('admin_products') }}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Add Product
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

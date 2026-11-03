@@ -1,0 +1,221 @@
+
+{% extends "base.html" %}
+
+{% block title %}Checkout | ShopZone{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/user.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="page-header">
+        <h1>Checkout</h1>
+        <p>Complete your order and payment</p>
+    </div>
+
+    <div class="checkout-container">
+
+        <div class="checkout-form">
+
+            <form method="POST" action="{{ url_for('checkout') }}">
+
+                <div class="checkout-card">
+
+                    <h2>Delivery Address</h2>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                value=""
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+
+                            <input
+                                type="text"
+                                id="phone"
+                                name="phone"
+                                value=""
+                                required
+                            >
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="address">
+                            Address
+                        </label>
+
+                        <textarea
+                            id="address"
+                            name="address"
+                            rows="4"
+                            required
+                        ></textarea>
+
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label for="city">City</label>
+
+                            <input
+                                type="text"
+                                id="city"
+                                name="city"
+                                value=""
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="state">State</label>
+
+                            <input
+                                type="text"
+                                id="state"
+                                name="state"
+                                value=""
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pincode">Pincode</label>
+
+                            <input
+                                type="text"
+                                id="pincode"
+                                name="pincode"
+                                value=""
+                                required
+                            >
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="checkout-card">
+
+                    <h2>Payment Method</h2>
+
+                    <div class="payment-options">
+
+                        <label class="payment-option">
+
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="COD"
+                                checked
+                            >
+
+                            <div>
+                                <strong>Cash on Delivery</strong>
+                                <p>Pay when your order is delivered.</p>
+                            </div>
+
+                        </label>
+
+
+                        <label class="payment-option">
+
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="RAZORPAY"
+                            >
+
+                            <div>
+                                <strong>Online Payment</strong>
+                                <p>Pay securely using Razorpay.</p>
+                            </div>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary place-order-btn"
+                >
+                    Continue to Payment
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="checkout-summary">
+
+            <h2>Order Summary</h2>
+
+            <div class="checkout-items">
+
+                {% for item in cart_items %}
+
+                <div class="checkout-item">
+
+                    <div>
+                        <strong>{{ item.productname }}</strong>
+
+                        <span>
+                            {{ item.quantity }} × ₹{{ item.saleprice }}
+                        </span>
+                    </div>
+
+                    <strong>
+                        ₹{{ item.subtotal }}
+                    </strong>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>₹{{ subtotal }}</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Shipping</span>
+                <span>₹{{ shipping }}</span>
+            </div>
+
+            <div class="summary-total">
+                <span>Total</span>
+                <strong>₹{{ total }}</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

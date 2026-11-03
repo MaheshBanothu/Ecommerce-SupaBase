@@ -1,0 +1,117 @@
+/* ShopZone Razorpay payment page */
+.payment-page {
+    min-height: 72vh;
+    display: grid;
+    place-items: center;
+    padding: 48px 18px;
+    background: #f5f7fb;
+}
+.payment-card {
+    width: min(100%, 470px);
+    padding: 38px;
+    border: 1px solid #e6eaf2;
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 18px 55px rgba(22, 34, 65, .10);
+    text-align: center;
+}
+.payment-mark {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 18px;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 28px;
+    font-weight: 800;
+}
+.payment-eyebrow {
+    margin: 0 0 9px;
+    color: #6366f1;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .16em;
+}
+.payment-card h1 {
+    margin: 0;
+    color: #172033;
+    font-size: clamp(25px, 5vw, 31px);
+    letter-spacing: -.04em;
+}
+.payment-copy {
+    margin: 12px 0 26px;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.65;
+}
+.payment-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding: 19px;
+    border: 1px solid #e8eaf2;
+    border-radius: 14px;
+    background: #fafbff;
+    color: #667085;
+    text-align: left;
+}
+.payment-summary strong {
+    color: #172033;
+    font-size: 25px;
+    font-weight: 800;
+}
+.payment-security {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 0 0 23px;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.55;
+    text-align: left;
+}
+.payment-button {
+    width: 100%;
+    min-height: 52px;
+    border: 0;
+    border-radius: 12px;
+    background: #4f46e5;
+    color: #fff;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.payment-button:hover {
+    background: #4338ca;
+    box-shadow: 0 9px 22px rgba(79, 70, 229, .22);
+    transform: translateY(-1px);
+}
+.payment-button:disabled {
+    opacity: .65;
+    cursor: wait;
+    transform: none;
+    box-shadow: none;
+}
+.payment-cancel {
+    display: inline-block;
+    margin-top: 18px;
+    color: #667085;
+    font-size: 13px;
+    text-decoration: none;
+}
+.payment-cancel:hover { color: #4338ca; text-decoration: underline; }
+.payment-error {
+    margin: 16px 0 0;
+    color: #b42318;
+    font-size: 13px;
+}
+@media (max-width: 520px) {
+    .payment-card { padding: 27px 20px; border-radius: 17px; }
+    .payment-summary strong { font-size: 22px; }
+}

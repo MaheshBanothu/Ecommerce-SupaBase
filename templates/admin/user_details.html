@@ -1,0 +1,265 @@
+```html
+{% extends "admin/base.html" %}
+
+{% block title %}User Details | ShopZone Admin{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1>User Details</h1>
+        <p>View customer information and order history.</p>
+    </div>
+
+    <a
+        href="{{ url_for('admin_users') }}"
+        class="btn btn-secondary"
+    >
+        Back to Users
+    </a>
+
+</div>
+
+
+<!-- User Information -->
+
+<div class="user-details-grid">
+
+    <div class="details-card">
+
+        <h2>Personal Information</h2>
+
+        <div class="detail-row">
+            <span>User ID</span>
+            <strong>#{{ user.id }}</strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Name</span>
+            <strong>{{ user.name }}</strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Email</span>
+            <strong>{{ user.email }}</strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Phone</span>
+            <strong>{{ user.phone }}</strong>
+        </div>
+
+        <div class="detail-row">
+            <span>Role</span>
+
+            {% if user.role == "admin" %}
+
+                <span class="user-role admin">
+                    Admin
+                </span>
+
+            {% else %}
+
+                <span class="user-role user">
+                    User
+                </span>
+
+            {% endif %}
+
+        </div>
+
+        <div class="detail-row">
+            <span>Registered Date</span>
+            <strong>{{ user.created_at }}</strong>
+        </div>
+
+    </div>
+
+
+    <!-- User Address -->
+
+    <div class="details-card">
+
+        <h2>Address</h2>
+
+        {% if user.address %}
+
+            <div class="address">
+
+                <p>
+                    {{ user.address }}
+                </p>
+
+                <p>
+                    {{ user.city }},
+                    {{ user.state }}
+                </p>
+
+                <p>
+                    {{ user.pincode }}
+                </p>
+
+            </div>
+
+        {% else %}
+
+            <p class="empty-text">
+                No address available.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- Order Summary -->
+
+<div class="user-order-summary">
+
+    <div class="summary-box">
+
+        <span>Total Orders</span>
+
+        <strong>
+            {{ orders|length }}
+        </strong>
+
+    </div>
+
+
+    <div class="summary-box">
+
+        <span>Total Spent</span>
+
+        <strong>
+            ₹{{ total_spent }}
+        </strong>
+
+    </div>
+
+</div>
+
+
+<!-- Order History -->
+
+<div class="details-card">
+
+    <div class="section-header">
+
+        <h2>Order History</h2>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table class="user-orders-table">
+
+            <thead>
+
+                <tr>
+                    <th>Order ID</th>
+                    <th>Total Amount</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for order in orders %}
+
+                <tr>
+
+                    <td>
+                        <strong>#{{ order.id }}</strong>
+                    </td>
+
+                    <td>
+                        ₹{{ order.total_amount }}
+                    </td>
+
+                    <td>
+
+                        {% if order.payment_status == "PAID" %}
+
+                            <span class="payment-status paid">
+                                Paid
+                            </span>
+
+                        {% elif order.payment_status == "FAILED" %}
+
+                            <span class="payment-status failed">
+                                Failed
+                            </span>
+
+                        {% else %}
+
+                            <span class="payment-status pending">
+                                Pending
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <span class="order-status {{ order.status|lower }}">
+                            {{ order.status }}
+                        </span>
+
+                    </td>
+
+                    <td>
+                        {{ order.created_at }}
+                    </td>
+
+                    <td>
+
+                        <a
+                            href="{{ url_for(
+                                'admin_order_details',
+                                order_id=order.id
+                            ) }}"
+                            class="action-view"
+                        >
+                            View
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="no-orders"
+                    >
+                        This user has not placed any orders.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
+```

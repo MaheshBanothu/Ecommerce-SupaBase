@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Order #{{ order.id }} | ShopZone{% endblock %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+```
+<div class="page-header">
+    <div>
+        <h1>Order #{{ order.id }}</h1>
+        <p>Order placed on {{ order.created_at }}</p>
+    </div>
+
+    <span class="status status-{{ order.status|lower }}">
+        {{ order.status }}
+    </span>
+</div>
+
+
+<!-- Order Information -->
+
+<div class="order-details-grid">
+
+    <div class="details-card">
+
+        <h2>Order Information</h2>
+
+        <div class="details-row">
+            <span>Order ID</span>
+            <strong>#{{ order.id }}</strong>
+        </div>
+
+        <div class="details-row">
+            <span>Order Date</span>
+            <strong>{{ order.created_at }}</strong>
+        </div>
+
+        <div class="details-row">
+            <span>Order Status</span>
+            <strong>{{ order.status }}</strong>
+        </div>
+
+        <div class="details-row">
+            <span>Total Items</span>
+            <strong>{{ order_items|length }}</strong>
+        </div>
+
+    </div>
+
+
+    <!-- Payment Information -->
+
+    <div class="details-card">
+
+        <h2>Payment Information</h2>
+
+        <div class="details-row">
+            <span>Payment Method</span>
+            <strong>{{ order.payment_method }}</strong>
+        </div>
+
+        <div class="details-row">
+            <span>Payment Status</span>
+            <strong class="payment-{{ order.payment_status|lower }}">
+                {{ order.payment_status }}
+            </strong>
+        </div>
+
+        {% if order.payment_id %}
+
+        <div class="details-row">
+            <span>Payment ID</span>
+            <strong class="payment-id-text">
+                {{ order.payment_id }}
+            </strong>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- Delivery Address -->
+
+<div class="details-card">
+
+    <h2>Delivery Address</h2>
+
+    <div class="address-box">
+
+        <strong>{{ order.customer_name }}</strong>
+
+        <p>{{ order.customer_phone }}</p>
+
+        <p>{{ order.delivery_address }}</p>
+
+        <p>
+            {{ order.city }},
+            {{ order.state }}
+            - {{ order.pincode }}
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- Ordered Products -->
+
+<div class="details-card">
+
+    <h2>Ordered Products</h2>
+
+    <div class="order-items">
+
+        {% for item in order_items %}
+
+        <div class="order-item">
+
+            <div class="order-item-image">
+
+                {% if item.image %}
+
+                <img
+                    src="{{ url_for('static', filename=item.image) }}"
+                    alt="{{ item.product_name }}"
+                >
+
+                {% else %}
+
+                <div class="no-image">
+                    No Image
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="order-item-info">
+
+                <h3>{{ item.product_name }}</h3>
+
+                {% if item.category %}
+                <p>{{ item.category }}</p>
+                {% endif %}
+
+                <p>
+                    Quantity:
+                    <strong>{{ item.quantity }}</strong>
+                </p>
+
+            </div>
+
+
+            <div class="order-item-price">
+
+                <p>
+                    ₹{{ item.price }} × {{ item.quantity }}
+                </p>
+
+                <strong>
+                    ₹{{ item.subtotal }}
+                </strong>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+<!-- Order Summary -->
+
+<div class="details-card order-summary-card">
+
+    <h2>Order Summary</h2>
+
+    <div class="summary-row">
+        <span>Subtotal</span>
+        <strong>₹{{ order.subtotal }}</strong>
+    </div>
+
+    <div class="summary-row">
+        <span>Shipping</span>
+        <strong>₹{{ order.shipping_charge }}</strong>
+    </div>
+
+    <div class="summary-row total-row">
+        <span>Total</span>
+        <strong>₹{{ order.total_amount }}</strong>
+    </div>
+
+</div>
+
+
+<!-- Actions -->
+
+<div class="order-detail-actions">
+
+    <a
+        href="{{ url_for('invoice', order_id=order.id) }}"
+        class="btn btn-secondary"
+    >
+        View Invoice
+    </a>
+
+    <a
+        href="{{ url_for('download_invoice', order_id=order.id) }}"
+        class="btn btn-primary"
+    >
+        Download Invoice
+    </a>
+
+    <a
+        href="{{ url_for('orders') }}"
+        class="btn btn-secondary"
+    >
+        My Orders
+    </a>
+
+    <a
+        href="{{ url_for('products') }}"
+        class="btn btn-secondary"
+    >
+        Continue Shopping
+    </a>
+
+</div>
+
+
+</div>
+
+{% endblock %}

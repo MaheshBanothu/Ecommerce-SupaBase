@@ -1,0 +1,419 @@
+
+{% extends "admin/base.html" %}
+
+{% block title %}Orders | ShopZone Admin{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1>Orders</h1>
+
+        <p>
+            Manage customer orders in your store.
+        </p>
+    </div>
+
+</div>
+
+
+<!-- Flash Messages -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+        {% for category, message in messages %}
+
+            <div class="alert {{ category }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
+
+
+<!-- Order Filters -->
+
+<div class="order-tools">
+
+    <form method="GET"
+          action="{{ url_for('admin_orders') }}">
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search by Order ID or Customer..."
+            value="{{ request.args.get('search', '') }}"
+        >
+
+
+        <select name="status">
+
+            <option value="">
+                All Status
+            </option>
+
+
+            <option value="PENDING"
+                {% if request.args.get('status') == 'PENDING' %}
+                    selected
+                {% endif %}
+            >
+                Pending
+            </option>
+
+
+            
+
+
+            <option value="SHIPPED"
+                {% if request.args.get('status') == 'SHIPPED' %}
+                    selected
+                {% endif %}
+            >
+                Shipped
+            </option>
+
+
+            <option value="DELIVERED"
+                {% if request.args.get('status') == 'DELIVERED' %}
+                    selected
+                {% endif %}
+            >
+                Delivered
+            </option>
+
+
+            <option value="CANCELLED"
+                {% if request.args.get('status') == 'CANCELLED' %}
+                    selected
+                {% endif %}
+            >
+
+                Cancelled
+
+            </option>
+
+        </select>
+
+
+        <button
+            type="submit"
+            class="btn btn-search"
+        >
+            Search
+        </button>
+
+
+        <a
+            href="{{ url_for('admin_orders') }}"
+            class="btn"
+        >
+            Clear
+        </a>
+
+    </form>
+
+</div>
+
+
+<!-- Orders List -->
+
+<div class="order-section">
+
+    <div class="section-header">
+
+        <h2>
+            Order List
+        </h2>
+
+        <span>
+            Total Orders: {{ total }}
+        </span>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table class="order-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Order ID</th>
+
+                    <th>Customer</th>
+
+                    <th>Items</th>
+
+                    <th>Total Amount</th>
+
+                    <th>Payment</th>
+
+                    <th>Order Status</th>
+
+                    <th>Date</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for order in orders %}
+
+                <tr>
+
+                    <!-- ORDER ID -->
+
+                    <td>
+
+                        <strong>
+                            #{{ order.orderid }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- CUSTOMER -->
+
+                    <td>
+
+                        <strong>
+                            {{ order.customer_name or 'Unknown' }}
+                        </strong>
+
+                        <br>
+
+                        <span class="customer-email">
+
+                            {{ order.customer_email or '' }}
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- ITEMS -->
+
+                    <td>
+
+                        {{ order.item_count }}
+
+                    </td>
+
+
+                    <!-- TOTAL -->
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(order.total_amount or 0) }}
+
+                    </td>
+
+
+                    <!-- PAYMENT -->
+
+                    <td>
+
+                        {% if order.payment_status == 'PAID' %}
+
+                            <span class="payment-status paid">
+                                Paid
+                            </span>
+
+                        {% elif order.payment_status == 'FAILED' %}
+
+                            <span class="payment-status failed">
+                                Failed
+                            </span>
+
+                        {% else %}
+
+                            <span class="payment-status pending">
+                                {{ order.payment_status or 'Pending' }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ORDER STATUS -->
+
+                    <td>
+
+                        <span class="order-status {{ order.status|lower }}">
+
+                            {{ order.status }}
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- DATE -->
+
+                    <td>
+
+                        {{ order.created_at }}
+
+                    </td>
+
+
+                    <!-- ACTIONS -->
+
+                    <td>
+
+                        <div class="order-actions">
+
+                            <a
+                                href="{{ url_for(
+                                    'admin_order_details',
+                                    order_id=order.orderid
+                                ) }}"
+                                class="action-view"
+                            >
+                                View
+                            </a>
+
+
+                            <a
+                                href="{{ url_for(
+                                    'admin_edit_order',
+                                    order_id=order.orderid
+                                ) }}"
+                                class="action-edit"
+                            >
+                                Update
+                            </a>
+                            <a
+    href="{{ url_for(
+        'order_invoice',
+        order_id=order.orderid
+    ) }}"
+    class="action-view"
+    target="_blank"
+>
+    Invoice
+</a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="8"
+                        class="no-orders"
+                    >
+
+                        No orders found.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- PAGINATION -->
+
+    {% if total_pages > 1 %}
+
+    <div class="pagination">
+
+
+        <!-- PREVIOUS -->
+
+        {% if page > 1 %}
+
+            <a
+                href="{{ url_for(
+                    'admin_orders',
+                    page=page-1,
+                    search=request.args.get('search', ''),
+                    status=request.args.get('status', '')
+                ) }}"
+            >
+                &laquo; Previous
+            </a>
+
+        {% endif %}
+
+
+        <!-- PAGE NUMBERS -->
+
+        {% for p in range(1, total_pages + 1) %}
+
+            {% if p == page %}
+
+                <span class="active">
+                    {{ p }}
+                </span>
+
+            {% else %}
+
+                <a
+                    href="{{ url_for(
+                        'admin_orders',
+                        page=p,
+                        search=request.args.get('search', ''),
+                        status=request.args.get('status', '')
+                    ) }}"
+                >
+                    {{ p }}
+                </a>
+
+            {% endif %}
+
+        {% endfor %}
+
+
+        <!-- NEXT -->
+
+        {% if page < total_pages %}
+
+            <a
+                href="{{ url_for(
+                    'admin_orders',
+                    page=page+1,
+                    search=request.args.get('search', ''),
+                    status=request.args.get('status', '')
+                ) }}"
+            >
+                Next &raquo;
+            </a>
+
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+

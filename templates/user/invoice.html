@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Invoice {{ order.invoice_number }} | ShopZone</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 35px 15px;
+            background: #f3f5f9;
+            color: #202938;
+            font-family: Arial, sans-serif;
+        }
+
+        .invoice {
+            max-width: 850px;
+            margin: auto;
+            padding: 45px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0,0,0,.06);
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #e9edf3;
+        }
+
+        .brand h1 {
+            margin: 0 0 8px;
+            color: #2563eb;
+            font-size: 30px;
+        }
+
+        .brand p, .invoice-meta p {
+            margin: 5px 0;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .invoice-title {
+            text-align: right;
+        }
+
+        .invoice-title h2 {
+            margin: 0 0 8px;
+            font-size: 25px;
+        }
+
+        .invoice-title strong {
+            color: #2563eb;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+            margin: 30px 0;
+        }
+
+        .info h3 {
+            margin: 0 0 12px;
+            font-size: 14px;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .info p {
+            margin: 6px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            padding: 13px 10px;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #e9edf3;
+            font-size: 13px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .summary {
+            width: 300px;
+            max-width: 100%;
+            margin: 25px 0 0 auto;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 9px 0;
+            font-size: 14px;
+        }
+
+        .grand-total {
+            margin-top: 8px;
+            padding-top: 15px;
+            border-top: 2px solid #dbe3ed;
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .payment-info {
+            margin-top: 30px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e9edf3;
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 25px auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 22px;
+            border: 0;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background: #475569;
+        }
+
+        @media(max-width: 600px) {
+            .invoice {
+                padding: 22px 15px;
+            }
+
+            .top {
+                flex-direction: column;
+            }
+
+            .invoice-title {
+                text-align: left;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            table {
+                font-size: 11px;
+            }
+
+            th, td {
+                padding: 10px 5px;
+            }
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+
+            .invoice {
+                max-width: 100%;
+                padding: 20px;
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .actions {
+                display: none;
+            }
+
+            @page {
+                size: A4;
+                margin: 12mm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="invoice">
+
+    <div class="top">
+
+        <div class="brand">
+            <h1>{{ settings.shop_name or 'ShopZone' }}</h1>
+
+            <p>{{ settings.shop_address }}</p>
+            <p>{{ settings.shop_email }}</p>
+            <p>{{ settings.shop_phone }}</p>
+        </div>
+
+        <div class="invoice-title">
+            <h2>INVOICE</h2>
+            <strong>{{ order.invoice_number }}</strong>
+
+            <div class="invoice-meta">
+                <p>Order #{{ order.orderid }}</p>
+                <p>Date: {{ order.created_at }}</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="info-grid">
+
+        <div class="info">
+            <h3>Bill To</h3>
+
+            <p><strong>{{ order.customer_name or 'Customer' }}</strong></p>
+            <p>{{ order.customer_email or '' }}</p>
+            <p>{{ order.customer_phone or '' }}</p>
+        </div>
+
+        <div class="info">
+            <h3>Ship To</h3>
+            <p>{{ order.address or 'Address unavailable' }}</p>
+        </div>
+
+    </div>
+
+    <h3>Order Items</h3>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th class="right">Price</th>
+                <th class="right">Qty</th>
+                <th class="right">Subtotal</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% set ns = namespace(subtotal=0) %}
+
+            {% for item in items %}
+
+                {% set ns.subtotal = ns.subtotal + (item.subtotal or 0) %}
+
+                <tr>
+                    <td>{{ item.productname or 'Product' }}</td>
+
+                    <td class="right">
+                        ₹{{ "%.2f"|format(item.price or 0) }}
+                    </td>
+
+                    <td class="right">
+                        {{ item.quantity }}
+                    </td>
+
+                    <td class="right">
+                        ₹{{ "%.2f"|format(item.subtotal or 0) }}
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    {% set shipping = (order.total_amount or 0) - ns.subtotal %}
+
+    <div class="summary">
+
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <strong>₹{{ "%.2f"|format(ns.subtotal) }}</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Shipping</span>
+            <strong>₹{{ "%.2f"|format(shipping if shipping > 0 else 0) }}</strong>
+        </div>
+
+        <div class="summary-row grand-total">
+            <span>Total</span>
+            <span>₹{{ "%.2f"|format(order.total_amount or 0) }}</span>
+        </div>
+
+    </div>
+
+    <div class="payment-info">
+
+        <strong>Payment Information</strong><br>
+
+        Payment Method: {{ order.payment_method_label }}<br>
+
+        Payment Status: {{ order.payment_status_label }}<br>
+
+        Order Status: {{ order.order_status|upper }}
+
+        {% if order.razorpay_payment_id %}
+            <br>Transaction ID: {{ order.razorpay_payment_id }}
+        {% endif %}
+
+    </div>
+
+    <div class="footer">
+        Thank you for shopping with {{ settings.shop_name or 'ShopZone' }}.
+        <br>
+        This is a computer-generated invoice.
+    </div>
+
+</div>
+
+<div class="actions">
+    <button class="btn" onclick="window.print()">
+        Print / Save as PDF
+    </button>
+
+    {% if session.get('role') == 'admin' %}
+        <a href="{{ url_for('admin_orders') }}"
+           class="btn btn-secondary">
+            Back to Orders
+        </a>
+    {% else %}
+        <a href="{{ url_for('products') }}"
+           class="btn btn-secondary">
+            Continue Shopping
+        </a>
+    {% endif %}
+</div>
+
+</body>
+</html>

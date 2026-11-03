@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Order Confirmation | ShopZone</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #f3f6fb;
+            font-family: Arial, sans-serif;
+            color: #1e293b;
+        }
+
+        .success-card {
+            width: 100%;
+            max-width: 520px;
+            padding: 42px 35px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 35px rgba(0,0,0,.07);
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 75px;
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #dcfce7;
+            color: #16a34a;
+            font-size: 38px;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: 26px;
+        }
+
+        .description {
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .order-box {
+            margin: 25px 0;
+            padding: 18px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+
+        .order-box p {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .order-id {
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            margin-top: 12px;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .note {
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="success-card">
+
+    <div class="success-icon">✓</div>
+
+    {% if is_cod %}
+
+        <h1>Order Placed Successfully!</h1>
+
+        <p class="description">
+            Thank you for shopping with ShopZone.
+            Your order has been received and is being processed.
+            You can pay when your order is delivered.
+        </p>
+
+    {% elif payment_success %}
+
+        <h1>Payment Successful!</h1>
+
+        <p class="description">
+            Your payment has been verified and your order
+            is confirmed. Thank you for shopping with ShopZone.
+        </p>
+
+    {% else %}
+
+        <h1>Order Received</h1>
+
+        <p class="description">
+            Your order has been received. Payment is not yet
+            confirmed. Please check your payment status.
+        </p>
+
+    {% endif %}
+
+    <div class="order-box">
+
+        <p>
+            Order Number:
+            <span class="order-id">
+                #{{ order.orderid }}
+            </span>
+        </p>
+
+        <p>
+            Invoice:
+            <strong>{{ order.invoice_number }}</strong>
+        </p>
+
+        <p>
+            Total Amount:
+            <strong>
+                ₹{{ "%.2f"|format(order.total_amount or 0) }}
+            </strong>
+        </p>
+
+        <p>
+            Payment:
+            <strong>{{ order.payment_method_label }}</strong>
+        </p>
+
+        <p>
+            Status:
+            <strong>{{ order.payment_status_label }}</strong>
+        </p>
+
+    </div>
+
+    <a href="{{ url_for(
+        'order_invoice',
+        order_id=order.orderid
+    ) }}" class="btn">
+        Download / Print Invoice
+    </a>
+
+    <a href="{{ url_for('products') }}"
+       class="btn btn-secondary">
+        Continue Shopping
+    </a>
+
+    <p class="note">
+        Your invoice can be printed or saved as a PDF.
+    </p>
+
+</div>
+
+</body>
+</html>

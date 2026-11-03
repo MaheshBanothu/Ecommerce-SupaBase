@@ -1,0 +1,58 @@
+```html
+{% extends "base.html" %}
+
+{% block title %}Payment Failed | ShopZone{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/user.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="payment-result failed">
+
+        <div class="result-icon">
+            ×
+        </div>
+
+        <h1>Payment Failed</h1>
+
+        <p>
+            We could not complete your payment.
+        </p>
+
+        {% if message %}
+
+        <p class="payment-error">
+            {{ message }}
+        </p>
+
+        {% endif %}
+
+        <div class="result-actions">
+
+            <a
+                href="{{ url_for('checkout') }}"
+                class="btn btn-primary"
+            >
+                Try Again
+            </a>
+
+            <a
+                href="{{ url_for('cart') }}"
+                class="btn btn-secondary"
+            >
+                Back to Cart
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

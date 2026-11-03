@@ -1,0 +1,69 @@
+```html
+{% extends "base.html" %}
+
+{% block title %}Payment Successful | ShopZone{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/user.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="payment-result success">
+
+        <div class="result-icon">
+            ✓
+        </div>
+
+        <h1>Payment Successful</h1>
+
+        <p>
+            Your payment has been successfully completed.
+        </p>
+
+        <div class="payment-details">
+
+            <div>
+                <span>Order ID</span>
+                <strong>#{{ order.id }}</strong>
+            </div>
+
+            <div>
+                <span>Payment ID</span>
+                <strong>{{ order.payment_id }}</strong>
+            </div>
+
+            <div>
+                <span>Amount Paid</span>
+                <strong>₹{{ order.total_amount }}</strong>
+            </div>
+
+        </div>
+
+        <div class="result-actions">
+
+            <a
+                href="{{ url_for('order_details', order_id=order.id) }}"
+                class="btn btn-primary"
+            >
+                View Order
+            </a>
+
+            <a
+                href="{{ url_for('invoice', order_id=order.id) }}"
+                class="btn btn-secondary"
+            >
+                View Invoice
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

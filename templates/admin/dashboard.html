@@ -1,0 +1,370 @@
+
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard | ShopZone{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+    <div>
+        <h1>
+            <i class="bi bi-speedometer2"></i>
+            Dashboard
+        </h1>
+
+        <p>
+            Welcome to the ShopZone Admin Panel
+        </p>
+    </div>
+
+</div>
+
+
+<!-- ================= STATISTICS ================= -->
+
+<div class="dashboard-cards">
+
+    <!-- Products -->
+    <div class="dashboard-card">
+
+        <div class="card-icon">
+            <i class="bi bi-box-seam"></i>
+        </div>
+
+        <h3>Total Products</h3>
+
+        <p class="card-number">
+            {{ total_products }}
+        </p>
+
+        <a href="{{ url_for('admin_products') }}">
+            View Products
+            <i class="bi bi-arrow-right"></i>
+        </a>
+
+    </div>
+
+
+    <!-- Categories -->
+    <div class="dashboard-card">
+
+        <div class="card-icon">
+            <i class="bi bi-grid"></i>
+        </div>
+
+        <h3>Total Categories</h3>
+
+        <p class="card-number">
+            {{ total_categories }}
+        </p>
+
+        <a href="{{ url_for('admin_category') }}">
+            View Categories
+            <i class="bi bi-arrow-right"></i>
+        </a>
+
+    </div>
+
+
+    <!-- Orders -->
+    <div class="dashboard-card">
+
+        <div class="card-icon">
+            <i class="bi bi-cart-check"></i>
+        </div>
+
+        <h3>Total Orders</h3>
+
+        <p class="card-number">
+            {{ total_orders }}
+        </p>
+
+        <a href="{{ url_for('admin_orders') }}">
+            View Orders
+            <i class="bi bi-arrow-right"></i>
+        </a>
+
+    </div>
+
+
+    <!-- Users -->
+    <div class="dashboard-card">
+
+        <div class="card-icon">
+            <i class="bi bi-people"></i>
+        </div>
+
+        <h3>Total Users</h3>
+
+        <p class="card-number">
+            {{ total_users }}
+        </p>
+
+        <a href="{{ url_for('admin_users') }}">
+            View Users
+            <i class="bi bi-arrow-right"></i>
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ================= RECENT ORDERS ================= -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h2>
+    <i class="bi bi-clock-history"></i>
+    Recent Orders
+</h2>
+
+<p>
+    Latest customer orders
+    | Last 7 days: <strong>{{ recent_count }}</strong> orders
+</p>
+        </div>
+
+        <a href="{{ url_for('admin_orders') }}"
+           class="view-all">
+
+            View All Orders
+            <i class="bi bi-arrow-right"></i>
+
+        </a>
+
+    </div>
+
+
+    <div class="table-responsive">
+
+        <table class="dashboard-table">
+
+            <thead>
+
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for order in recent_orders %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            #{{ order.orderid }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+
+                        <i class="bi bi-person-circle"></i>
+
+                        {{ order.customer_name }}
+
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+                            ₹{{ order.total_amount }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="status {{ order.status|lower }}">
+
+                            {{ order.status }}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        {{ order.created_at }}
+
+                    </td>
+
+
+                    <td>
+
+                        <a href="{{ url_for('admin_order_details', order_id=order.orderid)}}"
+                           class="btn btn-sm btn-outline-primary">
+
+                            <i class="bi bi-eye"></i>
+                            View
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+
+                {% else %}
+
+                <tr>
+
+                    <td colspan="6"
+                        class="no-data">
+
+                        <i class="bi bi-inbox"></i>
+
+                        <p>
+                            No recent orders found.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ================= QUICK ACTIONS ================= -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                <i class="bi bi-lightning"></i>
+                Quick Actions
+            </h2>
+
+            <p>
+                Quickly manage your store
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="quick-actions">
+
+
+        <!-- Products -->
+
+        <a href="{{ url_for('admin_products') }}"
+           class="action-card">
+
+            <div class="action-icon">
+
+                <i class="bi bi-box-seam"></i>
+
+            </div>
+
+            <h3>
+                Manage Products
+            </h3>
+
+            <p>
+                Add, edit or delete products.
+            </p>
+
+        </a>
+
+
+        <!-- Categories -->
+
+        <a href="{{ url_for('admin_category') }}"
+           class="action-card">
+
+            <div class="action-icon">
+
+                <i class="bi bi-grid"></i>
+
+            </div>
+
+            <h3>
+                Manage Categories
+            </h3>
+
+            <p>
+                View product categories.
+            </p>
+
+        </a>
+
+
+        <!-- Orders -->
+
+        <a href="{{ url_for('admin_orders') }}"
+           class="action-card">
+
+            <div class="action-icon">
+
+                <i class="bi bi-cart-check"></i>
+
+            </div>
+
+            <h3>
+                Manage Orders
+            </h3>
+
+            <p>
+                View and update customer orders.
+            </p>
+
+        </a>
+
+
+        <!-- Users -->
+
+        <a href="{{ url_for('admin_users') }}"
+           class="action-card">
+
+            <div class="action-icon">
+
+                <i class="bi bi-people"></i>
+
+            </div>
+
+            <h3>
+                Manage Users
+            </h3>
+
+            <p>
+                View and manage registered customers.
+            </p>
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile | ShopZone{% endblock %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+```
+<div class="page-header">
+    <div>
+        <h1>My Profile</h1>
+        <p>View and manage your account information.</p>
+    </div>
+
+    <a href="{{ url_for('edit_profile') }}" class="btn btn-primary">
+        Edit Profile
+    </a>
+</div>
+
+
+<div class="profile-container">
+
+    <!-- Personal Information -->
+
+    <div class="details-card">
+
+        <h2>Personal Information</h2>
+
+        <div class="profile-info">
+
+            <div class="profile-field">
+                <span>Full Name</span>
+                <strong>{{ user.name }}</strong>
+            </div>
+
+            <div class="profile-field">
+                <span>Email</span>
+                <strong>{{ user.email }}</strong>
+            </div>
+
+            <div class="profile-field">
+                <span>Phone</span>
+                <strong>
+                    {{ user.phone if user.phone else 'Not provided' }}
+                </strong>
+            </div>
+
+            <div class="profile-field">
+                <span>Gender</span>
+                <strong>
+                    {{ user.gender if user.gender else 'Not provided' }}
+                </strong>
+            </div>
+
+            <div class="profile-field">
+                <span>Date of Birth</span>
+                <strong>
+                    {{ user.dob if user.dob else 'Not provided' }}
+                </strong>
+            </div>
+
+            <div class="profile-field">
+                <span>Account Created</span>
+                <strong>{{ user.created_at }}</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Address Information -->
+
+    <div class="details-card">
+
+        <h2>Address Information</h2>
+
+        <div class="profile-info">
+
+            <div class="profile-field">
+                <span>Address</span>
+                <strong>
+                    {{ user.address if user.address else 'Not provided' }}
+                </strong>
+            </div>
+
+            <div class="profile-field">
+                <span>City</span>
+                <strong>
+                    {{ user.city if user.city else 'Not provided' }}
+                </strong>
+            </div>
+
+            <div class="profile-field">
+                <span>State</span>
+                <strong>
+                    {{ user.state if user.state else 'Not provided' }}
+                </strong>
+            </div>
+
+            <div class="profile-field">
+                <span>Pincode</span>
+                <strong>
+                    {{ user.pincode if user.pincode else 'Not provided' }}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Account Actions -->
+
+    <div class="details-card">
+
+        <h2>Account Settings</h2>
+
+        <div class="profile-actions">
+
+            <a
+                href="{{ url_for('edit_profile') }}"
+                class="btn btn-primary"
+            >
+                Edit Profile
+            </a>
+
+            <a
+                href="{{ url_for('change_password') }}"
+                class="btn btn-secondary"
+            >
+                Change Password
+            </a>
+
+            <a
+                href="{{ url_for('orders') }}"
+                class="btn btn-secondary"
+            >
+                My Orders
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,635 @@
+
+{% extends "admin/base.html" %}
+
+{% block title %}Products | ShopZone Admin{% endblock %}
+
+{% block content %}
+
+<!-- =====================================================
+     FLASH MESSAGES
+===================================================== -->
+
+<div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% for category, message in messages %}
+
+            {% if category == "msg" %}
+
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+
+            {% elif category == "err" %}
+
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+
+            {% endif %}
+
+        {% endfor %}
+
+    {% endwith %}
+
+</div>
+
+
+<!-- =====================================================
+     PAGE HEADER
+===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h1>Products</h1>
+
+        <p>
+            Manage all products in your store.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('admin_add_product') }}"
+        class="btn btn-primary"
+    >
+        Add Product
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     FILTERS
+===================================================== -->
+
+<div class="product-tools">
+
+    <form
+        method="GET"
+        action="{{ url_for('admin_products') }}"
+    >
+
+        <div class="filter-row">
+
+
+            <!-- SEARCH -->
+
+            <input
+                type="text"
+                name="search"
+                placeholder="Search products..."
+                value="{{ search }}"
+            >
+
+
+            <!-- CATEGORY -->
+
+            <select name="category">
+
+                <option value="">
+                    All Categories
+                </option>
+
+                {% for cat in categories %}
+
+                    <option
+                        value="{{ cat }}"
+                        {% if category == cat %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ cat }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+
+            <!-- STATUS -->
+
+            <select name="status">
+
+                <option value="">
+                    All Status
+                </option>
+
+                <option
+                    value="active"
+                    {% if status == 'active' %}
+                        selected
+                    {% endif %}
+                >
+                    Active
+                </option>
+
+                <option
+                    value="inactive"
+                    {% if status == 'inactive' %}
+                        selected
+                    {% endif %}
+                >
+                    Inactive
+                </option>
+
+            </select>
+
+
+            <!-- STOCK -->
+
+            <select name="stock">
+
+                <option value="">
+                    All Stock
+                </option>
+
+                <option
+                    value="available"
+                    {% if stock == 'available' %}
+                        selected
+                    {% endif %}
+                >
+                    Available
+                </option>
+
+                <option
+                    value="low"
+                    {% if stock == 'low' %}
+                        selected
+                    {% endif %}
+                >
+                    Low Stock
+                </option>
+
+                <option
+                    value="out"
+                    {% if stock == 'out' %}
+                        selected
+                    {% endif %}
+                >
+                    Out of Stock
+                </option>
+
+            </select>
+
+
+            <!-- MIN PRICE -->
+
+            <input
+                type="number"
+                name="min_price"
+                placeholder="Min price"
+                min="0"
+                step="0.01"
+                value="{{ min_price if min_price is not none else '' }}"
+            >
+
+
+            <!-- MAX PRICE -->
+
+            <input
+                type="number"
+                name="max_price"
+                placeholder="Max price"
+                min="0"
+                step="0.01"
+                value="{{ max_price if max_price is not none else '' }}"
+            >
+
+
+            <!-- APPLY -->
+
+            <button
+                type="submit"
+                class="btn btn-search"
+            >
+                Apply Filters
+            </button>
+
+
+            <!-- CLEAR -->
+
+            <a
+                href="{{ url_for('admin_products') }}"
+                class="btn"
+            >
+                Clear
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- =====================================================
+     PRODUCT SECTION
+===================================================== -->
+
+<div class="product-section">
+
+
+    <div class="section-header">
+
+        <h2>
+            Product List
+        </h2>
+
+        <span>
+            Total Products: {{ total }}
+        </span>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table class="product-table">
+
+
+            <!-- TABLE HEADER -->
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Image</th>
+
+                    <th>Product Name</th>
+
+                    <th>Category</th>
+
+                    <th>Price</th>
+
+                    <th>Stock</th>
+
+                    <th>Status</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+
+            <!-- TABLE BODY -->
+
+            <tbody>
+
+                {% for product in products %}
+
+                <tr>
+
+
+                    <!-- ID -->
+
+                    <td>
+                        {{ product.productid }}
+                    </td>
+
+
+                    <!-- IMAGE -->
+
+                   <td>
+                        {% if product.storedpath %}
+
+                            <img
+                                src="{{ url_for('static', 
+                                filename=product.storedpath.replace('\\', '/').replace('static/', '')) }}"
+                                alt="{{ product.productname }}"
+                                class="product-image"
+                            >
+
+                        {% else %}
+
+                            <div class="no-image">
+                                No Image
+                            </div>
+
+                        {% endif %}
+                    </td>
+
+
+                    <!-- PRODUCT NAME -->
+
+                    <td>
+
+                        <strong>
+                            {{ product.productname }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- CATEGORY -->
+
+                    <td>
+
+                        {{ product.category or 'Uncategorized' }}
+
+                    </td>
+
+
+                    <!-- PRICE -->
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(product.saleprice or 0) }}
+
+                    </td>
+
+
+                    <!-- STOCK -->
+
+                    <td>
+
+                        {{ product.quantity }}
+
+
+                        {% if product.quantity == 0 %}
+
+                            <span class="stock out">
+                                Out
+                            </span>
+
+                        {% elif product.quantity <= 5 %}
+
+                            <span class="stock low">
+                                Low
+                            </span>
+
+                        {% else %}
+
+                            <span class="stock available">
+                                Available
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- STATUS -->
+
+                    <td>
+
+                        {% if product.is_active %}
+
+                            <span class="product-status active">
+                                Active
+                            </span>
+
+                        {% else %}
+
+                            <span class="product-status inactive">
+                                Inactive
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ACTIONS -->
+
+                    <td>
+
+                        <div class="product-actions">
+
+
+                            <!-- EDIT -->
+
+                            <a
+                                href="{{ url_for(
+                                    'admin_edit_product',
+                                    product_id=product.productid
+                                ) }}"
+                                class="action-edit"
+                            >
+                                Edit
+                            </a>
+
+
+                            <!-- DEACTIVATE -->
+
+                            {% if product.is_active %}
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'admin_deactivate_product',
+                                        product_id=product.productid
+                                    ) }}"
+                                    onsubmit="return confirm(
+                                        'Are you sure you want to deactivate this product?'
+                                    );"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="action-delete"
+                                    >
+                                        Deactivate
+                                    </button>
+
+                                </form>
+
+
+                            <!-- ACTIVATE -->
+
+                            {% else %}
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'admin_activate_product',
+                                        product_id=product.productid
+                                    ) }}"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="action-edit"
+                                    >
+                                        Activate
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+
+                        </div>
+
+                    </td>
+
+
+                </tr>
+
+
+                {% else %}
+
+                <!-- NO PRODUCTS -->
+
+                <tr>
+
+                    <td
+                        colspan="8"
+                        class="no-products"
+                    >
+                        No products found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+
+
+
+
+    <!-- =================================================
+         PAGINATION
+    ================================================== -->
+
+    {% if total_pages > 1 %}
+
+    <div class="pagination">
+
+
+        <!-- PREVIOUS -->
+
+        {% if page > 1 %}
+
+            <a
+                href="{{ url_for(
+                    'admin_products',
+                    page=page-1,
+                    search=search,
+                    category=category,
+                    status=status,
+                    stock=stock,
+                    min_price=min_price,
+                    max_price=max_price
+                ) }}"
+            >
+                ← Previous
+            </a>
+
+        {% else %}
+
+            <span class="disabled">
+                ← Previous
+            </span>
+
+        {% endif %}
+
+
+        <!-- PAGE NUMBERS -->
+
+        {% for p in range(1, total_pages + 1) %}
+
+            {% if p == page %}
+
+                <span class="current-page">
+                    {{ p }}
+                </span>
+
+            {% else %}
+
+                <a
+                    href="{{ url_for(
+                        'admin_products',
+                        page=p,
+                        search=search,
+                        category=category,
+                        status=status,
+                        stock=stock,
+                        min_price=min_price,
+                        max_price=max_price
+                    ) }}"
+                >
+                    {{ p }}
+                </a>
+
+            {% endif %}
+
+        {% endfor %}
+
+
+        <!-- NEXT -->
+
+        {% if page < total_pages %}
+
+            <a
+                href="{{ url_for(
+                    'admin_products',
+                    page=page+1,
+                    search=search,
+                    category=category,
+                    status=status,
+                    stock=stock,
+                    min_price=min_price,
+                    max_price=max_price
+                ) }}"
+            >
+                Next →
+            </a>
+
+        {% else %}
+
+            <span class="disabled">
+                Next →
+            </span>
+
+        {% endif %}
+
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- PAGINATION INFO -->
+
+    {% if total > 0 %}
+
+    <div class="pagination-info">
+
+        Showing
+        {{ ((page - 1) * per_page) + 1 }}
+
+        -
+
+        {{ [page * per_page, total]|min }}
+
+        of
+
+        {{ total }}
+
+        products
+
+    </div>
+
+    {% endif %}
+
+
+</div>
+
+{% endblock %}
+

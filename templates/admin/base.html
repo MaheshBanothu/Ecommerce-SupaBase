@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}Admin | ShopZone{% endblock %}
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/admin.css') }}">
+
+    {% block extra_css %}
+    {% endblock %}
+
+</head>
+
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        ShopZone Admin
+    </div>
+
+
+    <div class="navbar-right">
+
+        <a href="{{ url_for('home') }}"
+           class="btn btn-website">
+
+            View Website
+
+        </a>
+
+
+        <span class="admin-name">
+            Admin
+        </span>
+
+
+        <a href="{{ url_for('logout') }}"
+           class="btn btn-logout">
+
+            Logout
+
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ================= MAIN LAYOUT ================= -->
+
+<div class="layout">
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-title">
+            Administration
+        </div>
+
+
+        <ul>
+
+            <li>
+                <a href="{{ url_for('admin_dashboard') }}">
+                    Dashboard
+                </a>
+            </li>
+
+
+            <li>
+                <a href="{{ url_for('admin_products') }}">
+                    Products
+                </a>
+            </li>
+
+
+            <li>
+                <a href="{{ url_for('admin_category') }}"
+                   class="{% if request.endpoint in ['admin_category', 'admin_add_category', 'admin_edit_category', 'admin_delete_category'] %}active{% endif %}">
+                    Categories
+                </a>
+            </li>
+
+
+            <li>
+ 
+                <a href="{{ url_for('admin_orders') }}">
+
+                    Orders
+                </a>
+            </li>
+
+
+            <li>
+
+                <a href="{{ url_for('admin_users') }}">
+
+                    Users
+                </a>
+            </li>
+
+
+            <li>
+
+                
+                <a href="#">
+                    Settings
+                </a>
+            </li>
+
+
+            <li>
+                <a href="{{ url_for('home') }}">
+                    Website
+                </a>
+            </li>
+
+        </ul>
+
+    </aside>
+
+
+
+    <!-- ================= CONTENT ================= -->
+
+    <main class="main-content">
+
+
+        <!-- Flash Messages -->
+
+        {% with messages = get_flashed_messages(
+            with_categories=true
+        ) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert alert-{{ category }}">
+
+                        {{ message }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- Page Content -->
+
+        {% block content %}
+        {% endblock %}
+
+
+    </main>
+
+</div>
+
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer class="footer">
+
+    © 2026 ShopZone Admin Panel | Codegnan 
+
+</footer>
+
+
+{% block extra_js %}
+{% endblock %}
+
+
+</body>
+
+</html>

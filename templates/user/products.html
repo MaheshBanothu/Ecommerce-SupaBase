@@ -1,0 +1,90 @@
+{% extends "user/base.html" %}
+
+{% block title %}Products | ShopZone{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="shop-container">
+    <header class="shop-heading">
+        <div>
+            <p class="eyebrow">SHOPZONE STORE</p>
+            <h1>Find your next favourite</h1>
+            <p class="shop-subtitle">Browse products currently available in our store.</p>
+        </div>
+        <span class="product-count">{{ products|length }} product{% if products|length != 1 %}s{% endif %}</span>
+    </header>
+
+    <form class="product-filters" method="GET" action="{{ url_for('products') }}">
+        <label class="search-field">
+            <span class="visually-hidden">Search products</span>
+            <input type="search" name="search" placeholder="Search products..." value="{{ search }}">
+        </label>
+
+        <label>
+            <span class="visually-hidden">Filter by category</span>
+            <select name="category">
+                <option value="">All categories</option>
+                {% for category in categories %}
+                <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>
+                    {{ category }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <button class="shop-button" type="submit">Search</button>
+        {% if search or selected_category %}
+        <a class="clear-filters" href="{{ url_for('products') }}">Clear filters</a>
+        {% endif %}
+    </form>
+
+    {% if products %}
+    <section class="product-grid" aria-label="Available products">
+        {% for product in products %}
+        <article class="product-card">
+            <a class="product-card-image-link" href="{{ url_for('product_details', product_id=product.productid) }}" aria-label="View {{ product.productname }}">
+                <div class="product-card-image">
+                    {% if product_image_url(product) %}
+                    <img src="{{ product_image_url(product) }}" alt="{{ product.productname }}" loading="lazy">
+                    {% else %}
+                    <div class="image-placeholder"><span>No image available</span></div>
+                    {% endif %}
+                </div>
+            </a>
+
+            <div class="product-card-body">
+                <p class="product-category">{{ product.category or 'General' }}</p>
+                <h2><a href="{{ url_for('product_details', product_id=product.productid) }}">{{ product.productname }}</a></h2>
+                <p class="product-description-preview">
+                    {{ product.description or 'Product details are coming soon.' }}
+                </p>
+
+                <div class="product-card-bottom">
+                    <span class="product-price">₹{{ "%.2f"|format(product.saleprice or 0) }}</span>
+                    {% if product.quantity|int > 0 %}
+                    <span class="stock-pill in-stock">In stock</span>
+                    {% else %}
+                    <span class="stock-pill out-of-stock">Out of stock</span>
+                    {% endif %}
+                </div>
+
+                <a class="view-product-button" href="{{ url_for('product_details', product_id=product.productid) }}">
+                    View Product <span aria-hidden="true">→</span>
+                </a>
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+    {% else %}
+    <section class="empty-products">
+        <div class="empty-icon" aria-hidden="true">⌕</div>
+        <h2>No products found</h2>
+        <p>Try another search term or select a different category.</p>
+        <a class="view-product-button" href="{{ url_for('products') }}">Show all products</a>
+    </section>
+    {% endif %}
+</main>
+{% endblock %}

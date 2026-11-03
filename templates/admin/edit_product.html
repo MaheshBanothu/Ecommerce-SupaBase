@@ -1,0 +1,156 @@
+
+{% extends "admin/base.html" %}
+
+{% block title %}Edit Product | ShopZone Admin{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Edit Product</h1>
+        <p>Update product information</p>
+    </div>
+
+    <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">
+        Back
+    </a>
+</div>
+
+<div class="form-card">
+
+    <form method="POST" enctype="multipart/form-data">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="name">Product Name</label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="{{ product.productname }}"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category</label>
+
+                <select id="category" name="category" required>
+
+                    {% for category in categories %}
+
+                    <option
+                        value="{{ category[0] }}"
+                        
+                    >
+                        {{ category[0] }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price</label>
+
+                <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    value="{{ product.saleprice }}"
+                    step="0.01"
+                    min="0"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="stock">Stock</label>
+
+                <input
+                    type="number"
+                    id="stock"
+                    name="stock"
+                    value="{{ product.quantity }}"
+                    min="0"
+                    required
+                >
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+
+            <textarea
+                id="description"
+                name="description"
+                rows="6"
+            >{{ product.description }}</textarea>
+        </div>
+
+        <div class="form-section">
+
+            <h3>Product Image</h3>
+
+            {% if product.storedpath %}
+                <div class="current-image">
+                    <img
+                        src="{{ url_for('static', 
+                        filename=product.storedpath.replace('\\', '/').replace('static/', '')) }}"
+                        alt="{{ product.productname }}"
+                    >
+                    <p>Current Image</p>
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+
+                <label for="image">
+                    Replace Image
+                </label>
+
+                <input
+                    type="file"
+                    id="image"
+                    name="image"
+                    accept="image/*"
+                    value="{{ url_for('static', 
+                        filename=product.storedpath.replace('\\', '/').replace('static/', '')) }}"
+                >
+
+                <small>
+                    Leave empty to keep the current image.
+                </small>
+
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+
+            <a
+                href="{{ url_for('admin_products') }}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Update Product
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
+

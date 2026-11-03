@@ -1,0 +1,72 @@
+{% extends "user/base.html" %}
+
+{% block title %}Your Cart | ShopZone{% endblock %}
+
+{% block content %}
+<main class="shop-container cart-page">
+    <header class="shop-heading">
+        <div>
+            <p class="eyebrow">YOUR SHOPPING BAG</p>
+            <h1>Your Cart</h1>
+            <p class="shop-subtitle">Review your items before checking out.</p>
+        </div>
+        <a class="view-product-button cart-continue" href="{{ url_for('products') }}">Continue shopping</a>
+    </header>
+
+    {% if cart_items %}
+    <div class="cart-layout">
+        <section class="cart-items" aria-label="Cart items">
+            {% for item in cart_items %}
+            <article class="cart-item">
+                <a class="cart-item-image" href="{{ url_for('product_details', product_id=item.productid) }}">
+                    {% if product_image_url(item) %}
+                    <img src="{{ product_image_url(item) }}" alt="{{ item.productname }}">
+                    {% else %}
+                    <span>No image</span>
+                    {% endif %}
+                </a>
+                <div class="cart-item-info">
+                    <p class="product-category">{{ item.category or 'General' }}</p>
+                    <h2><a href="{{ url_for('product_details', product_id=item.productid) }}">{{ item.productname }}</a></h2>
+                    <p class="cart-unit-price">₹{{ "%.2f"|format(item.saleprice or 0) }} each</p>
+                    {% if not item.is_active or item.stock|int < 1 %}
+                    <p class="cart-warning">This item is currently unavailable.</p>
+                    {% elif item.cart_quantity|int > item.stock|int %}
+                    <p class="cart-warning">Only {{ item.stock }} currently available. Update the quantity.</p>
+                    {% endif %}
+                    <div class="cart-item-actions">
+                        <form method="POST" action="{{ url_for('update_cart_item', cart_id=item.cartid) }}" class="cart-quantity-form">
+                            <label for="quantity-{{ item.cartid }}">Qty</label>
+                            <input id="quantity-{{ item.cartid }}" type="number" name="quantity" min="1" max="{{ item.stock }}" value="{{ item.cart_quantity }}" required>
+                            <button type="submit" class="cart-small-button">Update</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('remove_cart_item', cart_id=item.cartid) }}">
+                            <button type="submit" class="cart-remove-button">Remove</button>
+                        </form>
+                    </div>
+                </div>
+                <strong class="cart-subtotal">₹{{ "%.2f"|format(item.subtotal) }}</strong>
+            </article>
+            {% endfor %}
+        </section>
+
+        <aside class="cart-summary">
+            <h2>Order summary</h2>
+            <div class="cart-summary-row"><span>Items</span><span>{{ cart_items|length }}</span></div>
+            <div class="cart-summary-row cart-total"><span>Subtotal</span><strong>₹{{ "%.2f"|format(total) }}</strong></div>
+            <a href="{{ url_for('checkout') }}"
+   class="view-product-button cart-checkout-button">
+    Proceed to Checkout →
+</a>
+        </aside>
+    </div>
+    {% else %}
+    <section class="empty-products cart-empty">
+        <div class="empty-icon" aria-hidden="true">🛒</div>
+        <h2>Your cart is empty</h2>
+        <p>Find something you like and it will appear here.</p>
+        <a class="view-product-button" href="{{ url_for('products') }}">Browse products</a>
+    </section>
+    {% endif %}
+</main>
+{% endblock %}

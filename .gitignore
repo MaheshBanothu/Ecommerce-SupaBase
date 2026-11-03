@@ -1,0 +1,14 @@
+# Environment variables
+# .env
+# .env.*
+# !.env.example
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+ecomm/
+
+# Build files
+dist/
+build/

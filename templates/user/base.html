@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}ShopZone{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="shop-body">
+    <header class="shop-navbar">
+        <a class="shop-brand" href="{{ url_for('home') }}">Shop<span>Zone</span></a>
+        <nav class="shop-nav" aria-label="Main navigation">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('products') }}">Products</a>
+            {% if session.get('id') and session.get('role') != 'admin' %}
+                <a href="{{ url_for('cart') }}">Cart</a>
+            {% endif %}
+            {% if session.get('id') %}
+                <span class="shop-welcome">Hi, {{ session.get('name', 'Customer') }}</span>
+                <a class="nav-login" href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a class="nav-login" href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="shop-flash-wrap">
+            {% for category, message in messages %}
+            <div class="shop-flash shop-flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <footer class="shop-footer">© 2026 ShopZone. Built for browsing, not staring at an empty page.</footer>
+</body>
+</html>
