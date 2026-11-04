@@ -42,11 +42,11 @@
                     {% for category in categories %}
 
                     <option
-                        value="{{ category[0] }}"
-                        
-                    >
-                        {{ category[0] }}
-                    </option>
+    value="{{ category[0] }}"
+    {% if category[0] == product.category %}selected{% endif %}
+>
+    {{ category[0] }}
+</option>
 
                     {% endfor %}
 
@@ -91,45 +91,40 @@
                 rows="6"
             >{{ product.description }}</textarea>
         </div>
+<div class="form-section">
 
-        <div class="form-section">
+    <h3>Product Image</h3>
 
-            <h3>Product Image</h3>
+    {% set image_url = product_image_url(product) %}
 
-            {% if product.storedpath %}
-                <div class="current-image">
-                    <img
-                        src="{{ url_for('static', 
-                        filename=product.storedpath.replace('\\', '/').replace('static/', '')) }}"
-                        alt="{{ product.productname }}"
-                    >
-                    <p>Current Image</p>
-                </div>
-            {% endif %}
-
-            <div class="form-group">
-
-                <label for="image">
-                    Replace Image
-                </label>
-
-                <input
-                    type="file"
-                    id="image"
-                    name="image"
-                    accept="image/*"
-                    value="{{ url_for('static', 
-                        filename=product.storedpath.replace('\\', '/').replace('static/', '')) }}"
-                >
-
-                <small>
-                    Leave empty to keep the current image.
-                </small>
-
-            </div>
-
+    {% if image_url %}
+        <div class="current-image">
+            <img
+                src="{{ image_url }}"
+                alt="{{ product.productname }}"
+            >
+            <p>Current Image</p>
         </div>
+    {% endif %}
 
+    <div class="form-group">
+
+        <label for="image">Replace Image</label>
+
+        <input
+            type="file"
+            id="image"
+            name="image"
+            accept=".jpg,.jpeg,.png,.webp"
+        >
+
+        <small>
+            Leave empty to keep the current image.
+        </small>
+
+    </div>
+
+</div>
         <div class="form-actions">
 
             <a

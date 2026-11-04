@@ -13,6 +13,11 @@ from werkzeug.utils import secure_filename
 
 from database import createTables, AuthQueries, AdminQueries, UserQueries
 from database.connection import DatabaseConnction
+from database.storage import (
+    upload_product_image,
+    get_product_image_url,
+    delete_product_image
+)
 from dotenv import load_dotenv
 
 import razorpay
@@ -195,22 +200,43 @@ def allowed_image(filename):
 
 
 def product_image_url(product):
-    """Return a URL-safe static path for product images stored in the database."""
-    stored_path = (product.get("storedpath") or "").replace("\\", "/")
+    """Return the correct image URL from Supabase Storage or legacy local storage."""
+
+    if not product:
+        return None
+
+    stored_path = (product.get("storedpath") or "").replace("\\", "/").strip()
     img_name = product.get("imgname") or ""
 
+    # New images stored in Supabase Storage
+    if stored_path.startswith("products/"):
+        try:
+            return get_product_image_url(stored_path)
+        except Exception:
+            app.logger.exception(
+                "Failed to generate Supabase image URL: %s",
+                stored_path
+            )
+            return None
+
+    # Existing images stored locally
     if stored_path:
         normalized = stored_path.lstrip("/")
+
         if normalized.startswith("static/"):
             normalized = normalized[len("static/"):]
+
         if normalized.startswith("images/"):
             return url_for("static", filename=normalized)
 
+    # Legacy fallback when only imgname is available
     if img_name:
-        return url_for("static", filename=f"images/products/{img_name}")
+        return url_for(
+            "static",
+            filename=f"images/products/{img_name}"
+        )
 
     return None
-
 
 @app.context_processor
 def inject_product_helpers():
@@ -1036,19 +1062,43 @@ def admin_add_product():
         flash("Enter a valid non-negative price and stock quantity.", "err")
         return redirect(url_for("admin_add_product"))
 
-    stored_name = f"{uuid.uuid4().hex}_{secure_filename(image.filename)}"
-    image.save(PRODUCT_IMAGE_DIR / stored_name)
-    stored_path = str(Path("static") / "images" / "products" / stored_name)
+    uploaded_path = None
 
-    status, message = AdminQueries.insertProductRecord(
-        product_data=(
-            name, description, category, stock_value,
-            price_value, stored_name, stored_path
+    try:
+        # Upload image to Supabase Storage
+        uploaded_path = upload_product_image(image)
+
+        # Keep the filename separately for the existing database column
+        stored_name = uploaded_path.rsplit("/", 1)[-1]
+        stored_path = uploaded_path
+
+        # Save product details and Supabase storage path in PostgreSQL
+        status, message = AdminQueries.insertProductRecord(
+            product_data=(
+                name, description, category, stock_value,
+                price_value, stored_name, stored_path
+            )
         )
-    )
-    flash(message, "msg" if status else "err")
-    return redirect(url_for("admin_products"))
 
+        # Remove uploaded image if the database insert failed
+        if not status:
+            delete_product_image(uploaded_path)
+
+        flash(message, "msg" if status else "err")
+
+    except Exception as error:
+        app.logger.exception("Failed to add product")
+
+        # Prevent orphaned files in Supabase Storage
+        if uploaded_path:
+            try:
+                delete_product_image(uploaded_path)
+            except Exception:
+                app.logger.exception("Could not clean up uploaded product image")
+
+        flash(f"Could not add product: {error}", "err")
+
+    return redirect(url_for("admin_products"))
 
 @app.route("/admin/products/<int:product_id>/edit-product", methods=["GET", "POST"])
 def admin_edit_product(product_id):
@@ -1092,9 +1142,69 @@ def admin_edit_product(product_id):
         flash("Enter a valid non-negative price and stock quantity.", "err")
         return redirect(url_for("admin_edit_product", product_id=product_id))
 
+    
     stored_name = product.get("imgname") or ""
     stored_path = product.get("storedpath") or ""
 
+    old_stored_path = stored_path
+    new_uploaded_path = None
+
+    try:
+        # Upload a replacement only if the admin selected a new image
+        if image and image.filename:
+            new_uploaded_path = upload_product_image(image)
+
+            stored_name = new_uploaded_path.rsplit("/", 1)[-1]
+            stored_path = new_uploaded_path
+
+        status, message = AdminQueries.updateProductRecord(
+            product_data=(
+                name, description, category, stock_value,
+                price_value, stored_name, stored_path, product_id
+            )
+        )
+
+        if not status:
+            # Database update failed. Keep the old image and remove the new one.
+            if new_uploaded_path:
+                delete_product_image(new_uploaded_path)
+
+            flash(message, "err")
+            return redirect(
+                url_for("admin_edit_product", product_id=product_id)
+            )
+
+        # Database update succeeded. Now remove the previous Supabase image.
+        if (
+            new_uploaded_path
+            and old_stored_path
+            and old_stored_path.startswith("products/")
+        ):
+            try:
+                delete_product_image(old_stored_path)
+            except Exception:
+                app.logger.exception(
+                    "Could not delete previous product image: %s",
+                    old_stored_path
+                )
+
+        flash(message, "msg")
+
+    except Exception as error:
+        app.logger.exception("Failed to update product")
+
+        # Clean up the newly uploaded image if the operation failed.
+        if new_uploaded_path:
+            try:
+                delete_product_image(new_uploaded_path)
+            except Exception:
+                app.logger.exception(
+                    "Could not clean up replacement product image"
+                )
+
+        flash(f"Could not update product: {error}", "err")
+
+    return redirect(url_for("admin_products"))
     if image and image.filename:
         if not allowed_image(image.filename):
             flash("Image must be PNG, JPG, JPEG, WEBP, or GIF.", "err")

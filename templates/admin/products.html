@@ -299,22 +299,19 @@
                     <!-- IMAGE -->
 
                    <td>
-                        {% if product.storedpath %}
+                        {% set image_url = product_image_url(product) %}
 
-                            <img
-                                src="{{ url_for('static', 
-                                filename=product.storedpath.replace('\\', '/').replace('static/', '')) }}"
-                                alt="{{ product.productname }}"
-                                class="product-image"
-                            >
-
-                        {% else %}
-
-                            <div class="no-image">
-                                No Image
-                            </div>
-
-                        {% endif %}
+{% if image_url %}
+    <img
+        src="{{ image_url }}"
+        alt="{{ product.productname }}"
+        class="product-image"
+    >
+{% else %}
+    <div class="no-image">
+        No Image
+    </div>
+{% endif %}
                     </td>
 
 
